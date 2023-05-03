@@ -45,16 +45,6 @@ function App() {
     setAddedMeal(newTab);
   };
 
-  const [total, setTotal] = useState(0);
-
-  const sumCartTotal = (arr) => {
-    let sum = 0;
-    for (let i = 0; i < arr.length; i++) {
-      sum += arr[i].total;
-    }
-    return setTotal(sum);
-  };
-
   // const sumCartTotal = (arr) => {
   //   let sum = 0;
   //   for (let i = 0; i < arr.length; i++) {
@@ -64,16 +54,31 @@ function App() {
   // };
 
   const handleRemoveQty = (elem) => {
-    elem.quantity = elem.quantity - 1;
     const addedMealCopy = [...addedMeal];
+    if (elem.quantity <= 1) {
+      addedMealCopy.splice(
+        addedMealCopy.indexOf(
+          addedMealCopy.find((element) => element.id === elem.id)
+        ),
+        1
+      );
+      addedMealCopy.indexOf(
+        addedMealCopy.find((element) => element.id === elem.id)
+      );
+    }
+    elem.quantity = elem.quantity - 1;
+    elem.total -= Number(elem.price);
     setAddedMeal(addedMealCopy);
   };
 
   const handleAddQty = (elem) => {
     elem.quantity = elem.quantity + 1;
+    elem.total += Number(elem.price);
     const addedMealCopy = [...addedMeal];
     setAddedMeal(addedMealCopy);
   };
+
+  let total = 0;
 
   return isLoading ? (
     <p>Loading ...</p>
@@ -130,6 +135,8 @@ function App() {
             ) : (
               <div>
                 {addedMeal.map((elem) => {
+                  total += Number(elem.price) * Number(elem.quantity);
+
                   return (
                     <>
                       <div className="addedProducts" key={elem.id}>
@@ -152,9 +159,10 @@ function App() {
                         </button>
                         <span>{elem.title}</span>
                         {elem.price === elem.total ? (
-                          <span>{elem.price}</span>
+                          <span>{Number(elem.price).toFixed(2)}</span>
                         ) : (
-                          <span>{elem.total.toFixed(2)}</span>
+                          // <span>{elem.total.toFixed(2)}</span>
+                          <span>{Number(elem.total).toFixed(2)}</span>
                         )}
                       </div>
                     </>
@@ -163,7 +171,8 @@ function App() {
                 <div className="subTotal">
                   <div>
                     <span>Sous total</span>
-                    <span>{sumCartTotal(addedMeal)}</span>
+                    <span>{Number(total).toFixed(2)}</span>
+                    {/* <span>{sumCartTotal(addedMeal)}</span> */}
                   </div>
                   <div>
                     <span>Frais de livraison</span>
@@ -171,7 +180,7 @@ function App() {
                   </div>
                   <div>
                     <span>Total</span>
-                    <span>{Number(sumCartTotal(addedMeal)) + Number(2.5)}</span>
+                    {/* <span>{Number(sumCartTotal(addedMeal)) + Number(2.5)}</span> */}
                   </div>
                 </div>
               </div>
